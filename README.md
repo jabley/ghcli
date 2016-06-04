@@ -1,0 +1,1 @@
+A command-line client for interacting with the Github API.
