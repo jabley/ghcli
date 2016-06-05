@@ -1,0 +1,8 @@
+language: go
+
+go:
+  - tip
+  - 1.6.2
+
+notifications:
+    email: false
