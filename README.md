@@ -2,7 +2,7 @@
 
 A command-line client for interacting with the Github API.
 
-## Installatation
+## Installation
 ```shell
 $ go get github.com/jabley/ghcli
 ```
