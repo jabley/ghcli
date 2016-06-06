@@ -1,9 +1,11 @@
 package commands
 
 import (
+	"errors"
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -18,6 +20,8 @@ var (
 	NameWithOwnerRe = fmt.Sprintf("^(?:%s|%s\\/%s)$", NameRe, OwnerRe, NameRe)
 
 	CmdRunner = NewRunner()
+
+	ErrNoOrganisationSpecified = errors.New("No organisation specified")
 )
 
 type Command struct {
@@ -42,6 +46,7 @@ func (c *Command) Call(args *Args) (err error) {
 		)
 
 		tc := oauth2.NewClient(oauth2.NoContext, ts)
+		tc.Timeout = 5 * time.Second
 
 		client = github.NewClient(tc)
 	} else {
@@ -127,4 +132,23 @@ func (c *Command) lookupSubCommand(args *Args) (runCommand *Command, err error) 
 	}
 
 	return
+}
+
+func GetOrg(args *Args) (string, error) {
+	if args.IsParamsEmpty() {
+		return "", ErrNoOrganisationSpecified
+	}
+	return args.FirstParam(), nil
+}
+
+func HttpCleanup(resp *github.Response) {
+	if resp == nil {
+		return
+	}
+
+	if resp.Body == nil {
+		return
+	}
+
+	resp.Body.Close()
 }

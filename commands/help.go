@@ -45,6 +45,7 @@ var helpText = `
 These commands are provided by ghcli:
 
     members  Work with members
+    teams    Work with teams
 `
 
 func printUsage() {

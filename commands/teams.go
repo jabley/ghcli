@@ -10,50 +10,52 @@ import (
 )
 
 var (
-	cmdMembers = &Command{
-		Run:   listMembers,
-		Usage: "members ORGANISATION",
+	cmdTeams = &Command{
+		Run:   listTeams,
+		Usage: "teams ORGANISATION",
 		Long: `List the members of the organisation
 
 ## Options:
 
 `,
 	}
+
+	flagMemberOrganisation string
 )
 
 func init() {
-	CmdRunner.Use(cmdMembers)
+	CmdRunner.Use(cmdTeams)
 }
 
-func listMembers(client *github.Client, cmd *Command, args *Args) {
+func listTeams(client *github.Client, cmd *Command, args *Args) {
 	utils.CheckClient(client)
 
 	org, err := GetOrg(args)
 	utils.Check(err)
 
-	opt := &github.ListMembersOptions{
-		ListOptions: github.ListOptions{PerPage: 40},
+	opt := &github.ListOptions{
+		PerPage: 40,
 	}
 
-	var allUsers []github.User
+	var allTeams []github.Team
 	for {
-		users, resp, err := client.Organizations.ListMembers(org, opt)
+		teams, resp, err := client.Organizations.ListTeams(org, opt)
 
 		if err != nil {
 			ui.Errorln(err)
 			return
 		}
-		allUsers = append(allUsers, users...)
+		allTeams = append(allTeams, teams...)
 		if resp.NextPage == 0 {
 			break
 		}
-		opt.ListOptions.Page = resp.NextPage
+		opt.Page = resp.NextPage
 		HttpCleanup(resp)
 	}
 
 	var doc bytes.Buffer
 	enc := json.NewEncoder(&doc)
-	err = enc.Encode(allUsers)
+	err = enc.Encode(allTeams)
 
 	utils.Check(err)
 
