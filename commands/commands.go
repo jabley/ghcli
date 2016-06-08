@@ -1,11 +1,12 @@
 package commands
 
 import (
+	"bytes"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/google/go-github/github"
 	"golang.org/x/oauth2"
@@ -22,6 +23,8 @@ var (
 	CmdRunner = NewRunner()
 
 	ErrNoOrganisationSpecified = errors.New("No organisation specified")
+
+	ErrNoUserSpecified = errors.New("No user specified")
 )
 
 type Command struct {
@@ -46,7 +49,6 @@ func (c *Command) Call(args *Args) (err error) {
 		)
 
 		tc := oauth2.NewClient(oauth2.NoContext, ts)
-		tc.Timeout = 5 * time.Second
 
 		client = github.NewClient(tc)
 	} else {
@@ -86,6 +88,13 @@ func (c *Command) parseArguments(args *Args) (err error) {
 	}
 
 	return
+}
+
+func (c *Command) Use(subCommand *Command) {
+	if c.subCommands == nil {
+		c.subCommands = make(map[string]*Command)
+	}
+	c.subCommands[subCommand.Name()] = subCommand
 }
 
 func (c *Command) Synopsis() string {
@@ -134,11 +143,11 @@ func (c *Command) lookupSubCommand(args *Args) (runCommand *Command, err error) 
 	return
 }
 
-func GetOrg(args *Args) (string, error) {
-	if args.IsParamsEmpty() {
+func GetOrg(org string) (string, error) {
+	if org == "" {
 		return "", ErrNoOrganisationSpecified
 	}
-	return args.FirstParam(), nil
+	return org, nil
 }
 
 func HttpCleanup(resp *github.Response) {
@@ -151,4 +160,12 @@ func HttpCleanup(resp *github.Response) {
 	}
 
 	resp.Body.Close()
+}
+
+func ToJSON(v interface{}) (bytes.Buffer, error) {
+	var doc bytes.Buffer
+	enc := json.NewEncoder(&doc)
+	err := enc.Encode(v)
+
+	return doc, err
 }

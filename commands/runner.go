@@ -6,8 +6,6 @@ import (
 	"os"
 	"os/exec"
 	"syscall"
-
-	"github.com/jabley/ghcli/ui"
 )
 
 type ExecError struct {
@@ -73,17 +71,11 @@ func (r *Runner) Execute() ExecError {
 }
 
 func (r *Runner) Call(cmd *Command, args *Args) ExecError {
-	if args.Noop {
-		ui.Println(cmd.HelpText())
-	} else {
-		err := cmd.Call(args)
-		if err != nil {
-			if err == flag.ErrHelp {
-				err = nil
-			}
-			return newExecError(err)
+	err := cmd.Call(args)
+	if err != nil {
+		if err == flag.ErrHelp {
+			err = nil
 		}
 	}
-
-	return newExecError(nil)
+	return newExecError(err)
 }

@@ -1,9 +1,6 @@
 package commands
 
 import (
-	"bytes"
-	"encoding/json"
-
 	"github.com/google/go-github/github"
 	"github.com/jabley/ghcli/ui"
 	"github.com/jabley/ghcli/utils"
@@ -12,52 +9,56 @@ import (
 var (
 	cmdTeams = &Command{
 		Run:   listTeams,
-		Usage: "teams ORGANISATION",
+		Usage: "teams -o ORGANISATION",
 		Long: `List the members of the organisation
 
 ## Options:
+	-o, --org <ORGANISATION>
+        The organisation name
 
 `,
 	}
 
-	flagMemberOrganisation string
+	flagTeamOrganisation string
 )
 
 func init() {
+	cmdTeams.Flag.StringVarP(&flagTeamOrganisation, "organisation", "o", "", "ORGANISATION")
 	CmdRunner.Use(cmdTeams)
 }
 
 func listTeams(client *github.Client, cmd *Command, args *Args) {
-	utils.CheckClient(client)
-
-	org, err := GetOrg(args)
+	org, err := GetOrg(flagTeamOrganisation)
 	utils.Check(err)
 
-	opt := &github.ListOptions{
-		PerPage: 40,
-	}
+	if args.Noop {
 
-	var allTeams []github.Team
-	for {
-		teams, resp, err := client.Organizations.ListTeams(org, opt)
+	} else {
+		utils.CheckClient(client)
 
-		if err != nil {
-			ui.Errorln(err)
-			return
+		opt := &github.ListOptions{
+			PerPage: 40,
 		}
-		allTeams = append(allTeams, teams...)
-		if resp.NextPage == 0 {
-			break
+
+		var allTeams []github.Team
+		for {
+			teams, resp, err := client.Organizations.ListTeams(org, opt)
+
+			if err != nil {
+				ui.Errorln(err)
+				return
+			}
+			allTeams = append(allTeams, teams...)
+			if resp.NextPage == 0 {
+				break
+			}
+			opt.Page = resp.NextPage
+			HttpCleanup(resp)
 		}
-		opt.Page = resp.NextPage
-		HttpCleanup(resp)
+
+		doc, err := ToJSON(allTeams)
+		utils.Check(err)
+
+		ui.Println(doc.String())
 	}
-
-	var doc bytes.Buffer
-	enc := json.NewEncoder(&doc)
-	err = enc.Encode(allTeams)
-
-	utils.Check(err)
-
-	ui.Println(doc.String())
 }

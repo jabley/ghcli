@@ -10,13 +10,13 @@ $ go get github.com/jabley/ghcli
 ## Usage
 
 ```shell
-$ GH_OAUTH_TOKEN=a-token-here ghcli members alphagov
+$ GH_OAUTH_TOKEN=a-token-here ghcli members -o alphagov
 ```
 
 This will show all of the members of the organisation alphagov.
 
 ```shell
-$ GH_OAUTH_TOKEN=a-token-here ghcli teams alphagov
+$ GH_OAUTH_TOKEN=a-token-here ghcli teams -o alphagov
 ```
 
 This will show all of the teams of the organisation alphagov.
