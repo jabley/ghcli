@@ -44,6 +44,7 @@ func lookupCmd(name string) *Command {
 var helpText = `
 These commands are provided by ghcli:
 
+    events   Work with events
     members  Work with members
     teams    Work with teams
 `
