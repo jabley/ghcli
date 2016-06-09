@@ -150,6 +150,13 @@ func GetOrg(org string) (string, error) {
 	return org, nil
 }
 
+func GetUser(user string) (string, error) {
+	if user == "" {
+		return "", ErrNoUserSpecified
+	}
+	return user, nil
+}
+
 func HttpCleanup(resp *github.Response) {
 	if resp == nil {
 		return
