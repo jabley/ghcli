@@ -42,7 +42,7 @@ func listEvents(client *github.Client, cmd *Command, args *Args) {
 			PerPage: 40,
 		}
 
-		var allEvents []github.Event
+		allEvents := make([]github.Event, 0)
 		for {
 			events, resp, err := client.Activity.ListEventsPerformedByUser(user, false, opt)
 

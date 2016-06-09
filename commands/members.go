@@ -83,7 +83,7 @@ func listMembers(client *github.Client, cmd *Command, args *Args) {
 			ListOptions: github.ListOptions{PerPage: 40},
 		}
 
-		var allUsers []github.User
+		allUsers := make([]github.User, 0)
 		for {
 			users, resp, err := client.Organizations.ListMembers(org, opt)
 
