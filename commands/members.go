@@ -109,7 +109,7 @@ func addMember(client *github.Client, cmd *Command, args *Args) {
 	org, err := GetOrg(flagMemberOrganisation)
 	utils.Check(err)
 
-	user, err := getUser(flagMemberUser)
+	user, err := GetUser(flagMemberUser)
 	utils.Check(err)
 
 	if args.Noop {
@@ -133,7 +133,7 @@ func removeMember(client *github.Client, cmd *Command, args *Args) {
 	org, err := GetOrg(flagMemberOrganisation)
 	utils.Check(err)
 
-	user, err := getUser(flagMemberUser)
+	user, err := GetUser(flagMemberUser)
 	utils.Check(err)
 
 	if args.Noop {
@@ -148,11 +148,4 @@ func removeMember(client *github.Client, cmd *Command, args *Args) {
 
 		ui.Println(fmt.Sprintf("Removed user %s from organisation %s", user, org))
 	}
-}
-
-func getUser(user string) (string, error) {
-	if user == "" {
-		return "", ErrNoUserSpecified
-	}
-	return user, nil
 }
