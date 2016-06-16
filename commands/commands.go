@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/http/httputil"
 	"os"
 	"strings"
 
@@ -167,6 +168,17 @@ func HttpCleanup(resp *github.Response) {
 	}
 
 	resp.Body.Close()
+}
+
+func DumpResponse(resp *github.Response) {
+	if resp == nil {
+		return
+	}
+
+	httpResponse := resp.Response
+	if buf, err := httputil.DumpResponse(httpResponse, false); err == nil {
+		ui.Errorln(string(buf))
+	}
 }
 
 func ToJSON(v interface{}) (bytes.Buffer, error) {
