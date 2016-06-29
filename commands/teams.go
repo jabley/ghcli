@@ -40,7 +40,7 @@ func listTeams(client *github.Client, cmd *Command, args *Args) {
 			PerPage: 40,
 		}
 
-		allTeams := make([]github.Team, 0)
+		allTeams := make([]*github.Team, 0)
 		for {
 			teams, resp, err := client.Organizations.ListTeams(org, opt)
 
