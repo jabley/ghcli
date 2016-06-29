@@ -52,10 +52,10 @@ func listEvents(client *github.Client, cmd *Command, args *Args) {
 			PerPage: 40,
 		}
 
-		allEvents := make([]github.Event, 0)
+		allEvents := make([]*github.Event, 0)
 		for {
 			var (
-				events []github.Event
+				events []*github.Event
 				resp   *github.Response
 				err    error
 			)
