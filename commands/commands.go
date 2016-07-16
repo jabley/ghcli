@@ -26,6 +26,8 @@ var (
 	ErrNoOrganisationSpecified = errors.New("No organisation specified")
 
 	ErrNoUserSpecified = errors.New("No user specified")
+
+	ErrNoRepositorySpecified = errors.New("No repository specified")
 )
 
 type Command struct {
@@ -156,6 +158,13 @@ func GetUser(user string) (string, error) {
 		return "", ErrNoUserSpecified
 	}
 	return user, nil
+}
+
+func GetRepository(repo string) (string, error) {
+	if repo == "" {
+		return "", ErrNoRepositorySpecified
+	}
+	return repo, nil
 }
 
 func HttpCleanup(resp *github.Response) {
