@@ -63,6 +63,11 @@ func listEvents(client *github.Client, cmd *Command, args *Args) {
 			events, resp, err = client.Activity.ListUserEventsForOrganization(org, user, opt)
 
 			if err != nil {
+				if resp == nil {
+					ui.Errorln(err)
+					return
+				}
+
 				if resp.StatusCode != 422 {
 					ui.Errorln(err)
 					return
